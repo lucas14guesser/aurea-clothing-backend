@@ -192,7 +192,7 @@ module.exports = {
                 email_user
             );
 
-            const linkRedefinicao = `http://localhost:5173/redefinir-mail?token=${tokenRedefinicaoMail}`;
+            const linkRedefinicao = `https://aurea-clothing-frontend.vercel.app/redefinir-mail?token=${tokenRedefinicaoMail}`;
 
             await nodemailerConfig.redefinicaoEmail(email_user, nome_user, linkRedefinicao);
 
@@ -279,7 +279,7 @@ module.exports = {
             );
     
             // Cria o link de redefinição
-            const linkRedefinicao = `http://localhost:5173/esqueci-minha-senha?token=${tokenRedefinicaoSenha}`;
+            const linkRedefinicao = `https://aurea-clothing-frontend.vercel.app/esqueci-minha-senha?token=${tokenRedefinicaoSenha}`;
     
             // Envia o e-mail para o usuário
             await nodemailerConfig.recuperarSenha(email_user, linkRedefinicao);
@@ -319,7 +319,7 @@ module.exports = {
             );
     
             // Cria o link de redefinição
-            const linkRedefinicao = `http://localhost:5173/redefinir-senha?token=${tokenRedefinicaoSenha}`;
+            const linkRedefinicao = `https://aurea-clothing-frontend.vercel.app/redefinir-senha?token=${tokenRedefinicaoSenha}`;
     
             // Envia o e-mail para o usuário
             await nodemailerConfig.redefinicaoSenha(email_user, nome_user, linkRedefinicao);

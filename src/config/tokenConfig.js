@@ -16,7 +16,7 @@ const validarContaUsuario = async (req, res) => {
 
         await db.query('UPDATE usuarios SET email_confirmado = 1, token_confirmacao_cadastro = NULL WHERE token_confirmacao_cadastro = ?', [token_confirmacao_cadastro]);
 
-        return res.redirect('http://localhost:5173/login');
+        return res.redirect('https://aurea-clothing-frontend.vercel.app/login');
 
     } catch (error) {
         console.error('Erro ao confirmar a conta:', error);

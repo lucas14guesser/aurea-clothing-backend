@@ -67,7 +67,7 @@ app.post("/aurea/create_preference", async (req, res) => {
                 email: payer.email,
             },
             back_urls: {
-                success: "http://localhost:3001/aurea/pay-success",
+                success: "https://test-aureaclothing-backend-466bc65ebfec.herokuapp.com/aurea/pay-success",
                 failure: "https://aurea-clothing-frontend.vercel.app/pay-fail",
                 pending: "https://aurea-clothing-frontend.vercel.app/pay-load",
             },
@@ -218,7 +218,7 @@ app.get("/aurea/pay-success", async (req, res) => {
 
             // Limpa o carrinho do usuário após a compra
             try {
-                await axios.delete(`http://localhost:3001/aurea/carrinho/${id_user}`);
+                await axios.delete(`https://test-aureaclothing-backend-466bc65ebfec.herokuapp.com/aurea/carrinho/${id_user}`);
             } catch (error) {
                 console.error(`Erro ao limpar o carrinho do usuário ID ${id_user}:`, error);
                 // Caso queira retornar uma resposta de erro

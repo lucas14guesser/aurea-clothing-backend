@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 async function cadastrarMail(email_user, nome_user, tokenConfirmacao) {
     try {
-        const linkConfirmacao = `http://localhost:3001/aurea/confirmar-email?token_confirmacao_cadastro=${tokenConfirmacao}`;
+        const linkConfirmacao = `https://test-aureaclothing-backend-466bc65ebfec.herokuapp.com/aurea/confirmar-email?token_confirmacao_cadastro=${tokenConfirmacao}`;
 
         const info = await transporter.sendMail({
             from: `'Aurea Clothing' <${process.env.SMTP_GMAIL_USER}>`,
@@ -149,7 +149,7 @@ async function redefinicaoSenha(email_user, nome_user, linkRedefinicao) {
 }
 
 async function emailRedefinido(email_user, nome_user) {
-    const linkLogin = 'http://localhost:5173/login';
+    const linkLogin = 'https://aurea-clothing-frontend.vercel.app/login';
 
     try {
         const info = await transporter.sendMail({
@@ -171,7 +171,7 @@ async function emailRedefinido(email_user, nome_user) {
 }
 
 async function senhaRedefinida(email_user, nome_user) {
-    const linkLogin = 'http://localhost:5173/login';
+    const linkLogin = 'https://aurea-clothing-frontend.vercel.app/login';
 
     try {
         const info = await transporter.sendMail({
