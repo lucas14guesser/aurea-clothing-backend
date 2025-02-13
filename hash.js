@@ -4,7 +4,7 @@ const saltRounds = 10;
 
 const hashed = async () => {
     try {
-        const hashedPass = await bcrypt.hash('admin123', saltRounds);
+        const hashedPass = await bcrypt.hash('Aurea379102@', saltRounds);
         console.log('Senha hasheada:', hashedPass);
         return hashedPass;
     } catch (error) {

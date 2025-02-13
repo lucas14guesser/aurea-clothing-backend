@@ -18,7 +18,7 @@ const ReservaController = require('./controllers/ReservaController');
 const app = express();
 
 const corsOptions = {
-    origin: 'http://localhost:5173',
+    origin: ['http://localhost:5173', 'https://aurea-clothing-frontend.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
@@ -68,8 +68,8 @@ app.post("/aurea/create_preference", async (req, res) => {
             },
             back_urls: {
                 success: "http://localhost:3001/aurea/pay-success",
-                failure: "http://localhost:5173/pay-fail",
-                pending: "http://localhost:5173/pay-load",
+                failure: "https://aurea-clothing-frontend.vercel.app/pay-fail",
+                pending: "https://aurea-clothing-frontend.vercel.app/pay-load",
             },
             auto_return: "approved",
             payment_methods: {
@@ -226,10 +226,10 @@ app.get("/aurea/pay-success", async (req, res) => {
             }
 
             // Redireciona o usuário para a página de sucesso
-            res.redirect("http://localhost:5173/order-success");
+            res.redirect("https://aurea-clothing-frontend.vercel.app/order-success");
         } else {
             // Se o pagamento não for aprovado, redireciona para a página de falha
-            res.redirect("http://localhost:5173/pay-fail");
+            res.redirect("https://aurea-clothing-frontend.vercel.app/pay-fail");
         }
     } catch (error) {
         console.error("Erro ao processar pagamento:", error);
