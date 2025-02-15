@@ -18,7 +18,7 @@ const ReservaController = require('./controllers/ReservaController');
 const app = express();
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'https://aurea-clothing-frontend.vercel.app'],
+    origin: ['https://aurea-clothing-frontend.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,
