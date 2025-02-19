@@ -1,20 +1,21 @@
 const BannerService = require('../services/BannerService');
-const fs = require('fs');
 const path = require('path');
+const { cloudinary } = require('../config/bannerMulterConfig');
 
 module.exports = {
     inserirBanner: async (req, res) => {
         let json = { error: '', result: {} };
 
         let { nome_banner } = req.body;
-        let img_banner = req.file ? req.file.filename : null;
+        let img_banner = req.file ? req.file.path : null; // Pode ser necessário usar req.file.filename dependendo da configuração
 
         if (img_banner && nome_banner) {
             try {
+                // O img_banner é a URL ou o public_id do Cloudinary
                 await BannerService.inserirBanner(img_banner, nome_banner);
-                json.result = 'Banner inserido com sucesso!.';
+                json.result = 'Banner inserido com sucesso!';
             } catch (error) {
-                json.error = 'Erro ao inserir o banner.';
+                json.error = 'Erro ao inserir o banner: ' + error.message;
             }
         } else {
             json.error = 'Imagem não enviada.';
@@ -27,43 +28,32 @@ module.exports = {
 
         try {
             const banners = await BannerService.listarTodosBanners();
-
-            if (banners.length > 0) {
-                json.result = banners;
-            } else {
-                json.error = 'Erro ao listar os banners.';
-            }
+            json.result = banners.length > 0 ? banners : json.error = 'Erro ao listar os banners.';
         } catch (error) {
-            json.error = 'Não existem banners.' + error.message;
+            json.error = 'Não existem banners. ' + error.message;
         }
         res.json(json);
     },
 
     listarBannerPorId: async (req, res) => {
         let json = { error: '', result: [] };
-
         let id_banner = req.params.id_banner;
 
         if (id_banner) {
             try {
                 const banner = await BannerService.listarBannerPorId(id_banner);
-                if (banner.length > 0) {
-                    json.result = banner;
-                } else {
-                    json.error = 'Não existe banner com este ID.';
-                }
+                json.result = banner.length > 0 ? banner : json.error = 'Não existe banner com este ID.';
             } catch (error) {
-                json.error = 'Erro ao listar banner por ID.' + error.message;
+                json.error = 'Erro ao listar banner por ID: ' + error.message;
             }
         } else {
-            json.error = 'Não existe banner com este ID.';
+            json.error = 'ID do banner não fornecido.';
         }
         res.json(json);
     },
 
     excluirBanner: async (req, res) => {
         let json = { error: '', result: {} };
-
         let id_banner = req.params.id_banner;
 
         if (id_banner) {
@@ -73,32 +63,29 @@ module.exports = {
                 if (banner && banner.length > 0) {
                     const bannerData = banner[0];
 
-                    if (bannerData.img_banner) {
-                        const imagePath = path.join(__dirname, '../..', 'bannerUpload', bannerData.img_banner);
-                        if (fs.existsSync(imagePath)) {
-                            fs.unlinkSync(imagePath);
-                        }
-                    } else {
-                        json.error = 'banner não possui imagem associada.';
-                    }
+                    // Extrair o public_id da URL da imagem
+                    const publicId = bannerData.img_banner.split('/').pop().split('.')[0]; // Extraindo o public_id
 
-                    const excluido = await BannerService.excluirBanner(id_banner);
+                    // Deletar a imagem do Cloudinary
+                    const resultado = await cloudinary.uploader.destroy(publicId);
 
-                    if (excluido) {
-                        json.result = 'banner excluído.';
+                    // Verifique o resultado da exclusão
+                    if (resultado.result === 'ok') {
+                        const excluido = await BannerService.excluirBanner(id_banner);
+                        json.result = excluido ? 'Banner excluído com sucesso.' : 'Erro ao excluir banner no banco de dados.';
                     } else {
-                        json.error = 'Erro ao excluir banner no banco de dados.';
+                        json.error = 'Erro ao excluir a imagem no Cloudinary: ' + resultado;
                     }
                 } else {
-                    json.error = 'banner não encontrado.';
+                    json.error = 'Banner não encontrado.';
                 }
             } catch (error) {
                 console.error('Erro no controller:', error);
-                json.error = 'Erro ao excluir banner';
+                json.error = 'Erro ao excluir banner: ' + error.message;
             }
         } else {
-            json.error = 'ID do banner não fornecido';
+            json.error = 'ID do banner não fornecido.';
         }
         res.json(json);
     }
-}
+};

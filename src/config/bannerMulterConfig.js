@@ -1,21 +1,24 @@
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
+const { CloudinaryStorage } = require('multer-storage-cloudinary');
+const cloudinary = require('cloudinary').v2;
 
-const uploadDir = path.join(__dirname, '../..', 'bannerUpload');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-}
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'bannerUpload/');
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + path.extname(file.originalname));
-    }
+// Configurar o Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUD_NAME, // Substitua pelo seu Cloud Name
+    api_key: process.env.CLOUD_API_KEY,       // Substitua pela sua API Key
+    api_secret: process.env.CLOUD_API_SECRET,  // Substitua pelo seu API Secret
 });
 
-const bannerUpload = multer({ storage });
+// Configuração do armazenamento do Multer com Cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: 'banners', // Pasta onde as imagens serão armazenadas no Cloudinary
+        allowed_formats: ['jpg', 'png', 'jpeg'], // Formatos permitidos
+    },
+});
 
-module.exports = bannerUpload;
+// Criar o middleware de upload
+const bannerUpload = multer({ storage: storage });
+
+module.exports = bannerUpload, cloudinary;
