@@ -74,7 +74,8 @@ app.post("/aurea/create_preference", async (req, res) => {
             auto_return: "approved",
             payment_methods: {
                 excluded_payment_types: [],
-                installments: 12,
+                installments: 3, // Máximo de 3 parcelas para cartão
+                default_payment_method_id: null
             },
             metadata: {
                 id_user: metadata.id_user,
