@@ -1,15 +1,10 @@
 const db = require('../db');
 
 module.exports = {
-    inserirBanner: async (img_banner, nome_banner, public_id) => {
+    inserirBanner: async (img_banner, nome_banner) => {
         try {
-            const [results] = await db.query('INSERT INTO banners (img_banner, nome_banner, public_id) VALUES (?, ?, ?)', [img_banner, nome_banner, public_id]);
-            return {
-                id_banner: results.insertId, // Retorna o ID inserido
-                img_banner: img_banner, // Retorna a URL da imagem
-                nome_banner: nome_banner, // Retorna o nome do banner
-                public_id: public_id // Retorna o public_id
-            };
+            const [results] = await db.query('INSERT INTO banners (img_banner, nome_banner) VALUES (?, ?)', [img_banner, nome_banner]);
+            return results.insertId;
         } catch (error) {
             throw error;
         }
