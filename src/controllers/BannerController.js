@@ -12,10 +12,10 @@ module.exports = {
             try {
                 // Pega a URL da imagem salva no Cloudinary
                 const result = await cloudinary.uploader.upload(req.file.path, { folder: 'banners' });
-                img_banner = result.secure_url; // Pega a URL segura da imagem
+                img_banner = result.secure_url;
+                const public_id = result.public_id; // Armazena o public_id
 
-                // Salva no banco de dados
-                await BannerService.inserirBanner(img_banner, nome_banner);
+                await BannerService.inserirBanner(img_banner, nome_banner, public_id);
                 json.result = 'Banner inserido com sucesso!';
             } catch (error) {
                 json.error = 'Erro ao inserir o banner: ' + error.message;
@@ -62,16 +62,15 @@ module.exports = {
         if (id_banner) {
             try {
                 const banner = await BannerService.listarBannerPorId(id_banner);
-
                 if (banner && banner.length > 0) {
-                    const bannerData = banner[0];
+                    const { img_banner, public_id } = banner[0];
 
-                    // Obtém o `public_id` da URL do Cloudinary
-                    const publicId = bannerData.img_banner.split('/').pop().split('.')[0];
+                    if (!public_id) {
+                        json.error = 'Public ID não encontrado. Impossível excluir no Cloudinary.';
+                        return res.json(json);
+                    }
 
-                    // Exclui do Cloudinary
-                    const resultado = await cloudinary.uploader.destroy(`banners/${publicId}`);
-
+                    const resultado = await cloudinary.uploader.destroy(public_id);
                     if (resultado.result === 'ok') {
                         await BannerService.excluirBanner(id_banner);
                         json.result = 'Banner excluído com sucesso.';

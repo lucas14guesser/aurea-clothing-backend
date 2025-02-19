@@ -1,9 +1,9 @@
 const db = require('../db');
 
 module.exports = {
-    inserirBanner: async (img_banner, nome_banner) => {
+    inserirBanner: async (img_banner, nome_banner, public_id) => {
         try {
-            const [results] = await db.query('INSERT INTO banners (img_banner, nome_banner) VALUES (?, ?)', [img_banner, nome_banner]);
+            const [results] = await db.query('INSERT INTO banners (img_banner, nome_banner, public_id) VALUES (?, ?, ?)', [img_banner, nome_banner, public_id]);
             return results.insertId;
         } catch (error) {
             throw error;
