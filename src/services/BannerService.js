@@ -4,7 +4,12 @@ module.exports = {
     inserirBanner: async (img_banner, nome_banner, public_id) => {
         try {
             const [results] = await db.query('INSERT INTO banners (img_banner, nome_banner, public_id) VALUES (?, ?, ?)', [img_banner, nome_banner, public_id]);
-            return results.insertId;
+            return {
+                id_banner: results.insertId, // Retorna o ID inserido
+                img_banner: img_banner, // Retorna a URL da imagem
+                nome_banner: nome_banner, // Retorna o nome do banner
+                public_id: public_id // Retorna o public_id
+            };
         } catch (error) {
             throw error;
         }

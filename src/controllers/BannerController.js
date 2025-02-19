@@ -4,17 +4,16 @@ const cloudinary = require('../config/bannerMulterConfig').cloudinary;
 module.exports = {
     inserirBanner: async (req, res) => {
         let json = { error: '', result: {} };
-
+    
         let { nome_banner } = req.body;
-        let img_banner = req.file ? req.file.path : null; // Antes pegava o caminho local
-
+        let img_banner = req.file ? req.file.path : null; // Isso já terá a URL do Cloudinary
+    
         if (req.file && req.file.path) {
             try {
-                // Pega a URL da imagem salva no Cloudinary
-                const result = await cloudinary.uploader.upload(req.file.path, { folder: 'banners' });
-                img_banner = result.secure_url;
-                const public_id = result.public_id; // Armazena o public_id
-
+                // O resultado já vem do multer-storage-cloudinary, então apenas atualize o `img_banner`
+                img_banner = req.file.path; // Agora isso contém a URL do Cloudinary
+                const public_id = req.file.filename; // O public_id é o nome do arquivo gerado
+    
                 await BannerService.inserirBanner(img_banner, nome_banner, public_id);
                 json.result = 'Banner inserido com sucesso!';
             } catch (error) {
