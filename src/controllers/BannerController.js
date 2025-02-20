@@ -95,8 +95,6 @@ module.exports = {
             const publicIdWithExtension = urlParts.slice(-2).join('/'); // Ex: "banners/nuaykjmc1y4uvxnzqdfo.jpg"
             const publicId = publicIdWithExtension.split('.')[0]; // Ex: "banners/nuaykjmc1y4uvxnzqdfo"
 
-            console.log("Public ID extraído:", publicId);
-
             if (!publicId) {
                 return res.status(500).json({ error: 'Public ID inválido' });
             }

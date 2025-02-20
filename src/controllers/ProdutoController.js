@@ -2,17 +2,47 @@ const ProdutoService = require('../services/ProdutoService');
 const db = require('../db');
 const fs = require('fs');
 const path = require('path');
+const cloudinary = require('../config/cloudinary');
+
+const uploadPrdToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+        const stream = cloudinary.uploader.upload_stream(
+            { folder: 'produtos' }, // Mude para a pasta desejada
+            (error, result) => {
+                if (error) return reject(error);
+                resolve(result);
+            }
+        );
+        stream.end(fileBuffer);
+    });
+};
 
 module.exports = {
     cadastrarProduto: async (req, res) => {
         let json = { error: '', result: {} };
 
         let { nome_produto, categoria_produto, preco_produto, parcela_produto, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto } = req.body;
-        let img_produto = req.file ? req.file.filename : null;
+        let img_produto = req.file;
 
         if (nome_produto && categoria_produto && preco_produto && parcela_produto && img_produto && qtd_produto && cor_produto && tamanho_produto) {
             try {
-                await ProdutoService.cadastrarProduto(nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto || null);
+                // Upload da imagem para o Cloudinary usando a nova função
+                const uploadResponse = await uploadPrdToCloudinary(img_produto.buffer);
+
+                // Salva as informações do produto no banco de dados
+                await ProdutoService.cadastrarProduto(
+                    nome_produto,
+                    categoria_produto,
+                    preco_produto,
+                    parcela_produto,
+                    uploadResponse.secure_url, // URL da imagem
+                    uploadResponse.public_id, // Public ID da imagem
+                    qtd_produto,
+                    cor_produto,
+                    tamanho_produto,
+                    subcategoria_produto || null
+                );
+
                 json.result = 'Produto cadastrado com sucesso!';
             } catch (error) {
                 json.error = 'Erro ao cadastrar produto: ' + error.message;
