@@ -90,34 +90,27 @@ module.exports = {
 
             const { img_banner } = banner[0];
 
-            if (!img_banner) {
-                return res.status(400).json({ error: 'Imagem do banner não encontrada' });
-            }
-
-            // Extrai o public_id corretamente
+            // Extrai corretamente o `public_id` da URL do Cloudinary
             const urlParts = img_banner.split('/');
-            const publicIdWithExtension = urlParts[urlParts.length - 1]; // Último segmento da URL
-            const publicId = publicIdWithExtension.split('.')[0]; // Remove a extensão
+            const publicIdWithExtension = urlParts.slice(-2).join('/'); // Ex: "banners/nuaykjmc1y4uvxnzqdfo.jpg"
+            const publicId = publicIdWithExtension.split('.')[0]; // Ex: "banners/nuaykjmc1y4uvxnzqdfo"
+
+            console.log("Public ID extraído:", publicId);
+
+            if (!publicId) {
+                return res.status(500).json({ error: 'Public ID inválido' });
+            }
 
             // Exclui a imagem do Cloudinary
-            const cloudinaryResponse = await cloudinary.uploader.destroy(publicId);
+            await cloudinary.uploader.destroy(publicId);
 
-            if (cloudinaryResponse.result !== "ok") {
-                return res.status(500).json({ error: 'Erro ao excluir imagem do Cloudinary' });
-            }
-
-            // Remove o banner do banco de dados
-            const deleted = await BannerService.excluirBanner(id_banner);
-
-            if (!deleted) {
-                return res.status(500).json({ error: 'Erro ao excluir banner do banco de dados' });
-            }
-
+            // Remove do banco de dados
+            await BannerService.excluirBanner(id_banner);
             res.json({ result: 'Banner excluído com sucesso' });
 
         } catch (error) {
-            console.error("Erro ao excluir banner:", error);
-            res.status(500).json({ error: 'Erro ao excluir banner' });
+            console.error('Erro ao excluir banner:', error);
+            res.status(500).json({ error: 'Erro ao excluir imagem do Cloudinary' });
         }
     },
 }
