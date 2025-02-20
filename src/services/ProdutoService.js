@@ -1,9 +1,9 @@
 const db = require('../db');
 
 module.exports = {
-    cadastrarProduto: async (nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto) => {
+    cadastrarProduto: async (nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, public_id, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto) => {
         try {
-            const [results] = await db.query('INSERT INTO produtos (nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto]);
+            const [results] = await db.query('INSERT INTO produtos (nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, public_id,  qtd_produto, cor_produto, tamanho_produto, subcategoria_produto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [nome_produto, categoria_produto, preco_produto, parcela_produto, img_produto, public_id, qtd_produto, cor_produto, tamanho_produto, subcategoria_produto]);
             return results.insertId;
         } catch (error) {
             throw error;
