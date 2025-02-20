@@ -195,45 +195,41 @@ module.exports = {
 
     excluirProduto: async (req, res) => {
         let json = { error: '', result: {} };
-
         let id_produto = req.params.id_produto;
-
-        if (id_produto) {
-            try {
-                const produto = await ProdutoService.verificarProdutoPorId(id_produto);
-
-                if (produto && produto.length > 0) {
-                    const produtoData = produto[0];
-
-                    if (produtoData.img_produto) {
-                        const imagePath = path.join(__dirname, '../..', 'uploads', produtoData.img_produto);
-                        if (fs.existsSync(imagePath)) {
-                            fs.unlinkSync(imagePath);
-                        }
-                    } else {
-                        json.error = 'Produto não possui imagem associada.';
-                    }
-
-                    const excluido = await ProdutoService.excluirProduto(id_produto);
-
-                    if (excluido) {
-                        json.result = 'Produto excluído.';
-                    } else {
-                        json.error = 'Erro ao excluir produto no banco de dados.';
-                    }
-                } else {
-                    json.error = 'Produto não encontrado.';
-                }
-            } catch (error) {
-                console.error('Erro no controller:', error);
-                json.error = 'Erro ao excluir produto';
-            }
-        } else {
-            json.error = 'ID do produto não fornecido';
+    
+        if (!id_produto) {
+            return res.status(400).json({ error: 'ID do produto não fornecido.' });
         }
+    
+        try {
+            const produto = await ProdutoService.verificarProdutoPorId(id_produto);
+    
+            if (!produto || produto.length === 0) {
+                return res.status(404).json({ error: 'Produto não encontrado.' });
+            }
+    
+            const { public_id } = produto[0]; // Pegando o public_id salvo no banco
+    
+            if (public_id) {
+                // Exclui a imagem do Cloudinary
+                await cloudinary.uploader.destroy(public_id);
+            }
+    
+            // Exclui o produto do banco de dados
+            const excluido = await ProdutoService.excluirProduto(id_produto);
+    
+            if (excluido) {
+                json.result = 'Produto excluído com sucesso!';
+            } else {
+                json.error = 'Erro ao excluir produto no banco de dados.';
+            }
+        } catch (error) {
+            console.error('Erro no controller:', error);
+            json.error = 'Erro ao excluir produto.';
+        }
+    
         res.json(json);
     },
-
 
     cadastrarProdutoListaAmei: async (req, res) => {
         const { id_user, id_produto } = req.body;
